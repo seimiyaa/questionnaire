@@ -17,96 +17,63 @@ const con = mysql.createConnection({
   database: "express_db",
 });
 
-// mysqlからデータを持ってくる
+// ルートパスにアクセスされたときの処理
 app.get("/", (req, res) => {
-  const sql = "select * from users";
-  // 参考例
-  const num = 10000;
-  const text = "hello";
+  // データベースからアンケートデータを取得
+  const sql = "SELECT * FROM questionnaire";
 
-  const userList = [
-    { id: "1", name: "s.chiba", email: "s.chiba@gmail.com" },
-    { id: "2", name: "t.kosuge", email: "t.kosuge@gmail.com" },
-    { id: "3", name: "m.chiba", email: "m.chiba@gmail.com" },
-    { id: "4", name: "t.suzuki", email: "t.suzuki@gmail.com" },
-    { id: "5", name: "t.hasegawa", email: "t.hasegawa@gmail.com" },
-  ];
-
-  // 基礎課題
-  /* ==========従来通りJavaScriptno要領で書いてください。==========
-    ここで記載する内容はブラウザに出力するための情報のみになります。上記参考例のconst num = 10000;のように
-    各基礎課題で指定された情報を一つの変数に格納していきましょう。各情報を変数に格納したら今度は下にある
-    コメントアウト⓵の部分を確認してみて下さい。*/ //基礎課題01:文字列を画面に出力しましょう。
-  /*基礎課題02:リストを画面表示
-    app.jsのここで配列を用意し、viewsフォルダのindex.ejsのscriptタグ内で画面に出力出来るように機能を作成して下さい
-    基礎課題03:マップを画面表示
-    マップというのは配列の中にオブジェクトを設定するものになります。よく分からない方は
-    オブジェクトを以下のように設定
-    name: s.chiba, email: s.chiba@gmail.com
-    name: t.kosuge, email: t.kosuge@gmail.com
-    name: m.chiba, email: m.chiba@gmail.com
-    name: t.suzuki, email: t.suzuki@gmail.com
-    name: t.hasegawa, email: t.hasegawa@gmail.com
-  */
-  // ==========ここまでの範囲で書くようにしましょう。==========
-  // 51行目あたりに追加
+  // フォームデータの処理
   app.post("/", (req, res) => {
-    const sql = "INSERT INTO users SET ?";
-    con.query(sql, req.body, function (err, result, fields) {
-      if (err) throw err;
+    const sqlInsert = "INSERT INTO questionnaire SET ?";
+    const validColumns = [
+      "name",
+      "kana",
+      "gender",
+      "email",
+      "address",
+      "phone_number",
+      "inquiry_text",
+    ];
+
+    // フォームデータから存在するカラムのみを取り出す
+    const validData = Object.keys(req.body)
+      .filter((key) => validColumns.includes(key))
+      .reduce((obj, key) => {
+        obj[key] = req.body[key];
+        return obj;
+      }, {});
+
+    // データベースに挿入
+    con.query(sqlInsert, validData, function (err, result, fields) {
+      if (err) {
+        console.error("データ挿入エラー:", err);
+        res.status(500).send("内部サーバーエラー");
+        return;
+      }
+
       console.log(result);
-      res.redirect("/");
+      res.sendFile(path.join(__dirname, "html/endpage.html"));
     });
   });
 
-  app.get("/create", (req, res) => {
-    res.sendFile(path.join(__dirname, "html/form.html"));
-  });
-
+  // アンケートデータを表示
   con.query(sql, function (err, result, fields) {
     if (err) throw err;
     res.render("index", {
-      users: result,
-      // ⓵ こちらはapp.jsで宣言した変数をindex.ejsのscriptタグ内で使用するために登録する場所になっています。
-      /*
-        指定の仕方はオブジェクトの考え方と同じで、プロパティ名: 値の形になります。値の部分は変数名を入れるようにして下さい。
-        プロパティ名はindex.ejsで使用しますので、何の値が入ってるかわかるような名前にしましょう。
-      */
-      number: num,
-      text: text,
-      userlist: userList,
+      questionnaire: result,
     });
   });
 });
 
-app.get("/edit/:id", (req, res) => {
-  const sql = "SELECT * FROM users WHERE id = ?";
-  con.query(sql, [req.params.id], function (err, result, fields) {
-    if (err) throw err;
-    res.render("edit", {
-      user: result,
-    });
-  });
-});
-
-app.post("/update/:id", (req, res) => {
-  const sql = "UPDATE users SET ? WHERE id = " + req.params.id;
-  con.query(sql, req.body, function (err, result, fields) {
+app.get("/delete/:name", (req, res) => {
+  const sql = "DELETE FROM questionnaire WHERE name = ?";
+  con.query(sql, [req.params.name], function (err, result, fields) {
     if (err) throw err;
     console.log(result);
     res.redirect("/");
   });
 });
 
-app.get("/delete/:id", (req, res) => {
-  const sql = "DELETE FROM users WHERE id = ?";
-  con.query(sql, [req.params.id], function (err, result, fields) {
-    if (err) throw err;
-    console.log(result);
-    res.redirect("/");
-  });
-});
-
-app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+// サーバーを起動
+app.listen(port, () => console.log(`ポート ${port} でアプリが起動しました！`));
 console.log("テスト");
-//textのコメントアウト

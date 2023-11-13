@@ -2,101 +2,136 @@
 <html lang="ja">
     <head>
         <meta charset="UTF-8">
-        <title>User list</title>
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <title>questionnaire</title>
+        <style>
+            /* ボタンのスタイル */
+            body {
+                font-family: 'Arial', sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            form {
+                max-width: 600px;
+                margin: 20px auto;
+                padding: 20px;
+                background-color: #fff;
+                border-radius: 10px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+
+            label {
+                display: block;
+                margin-bottom: 8px;
+            }
+
+            .text {
+                width: 100%;
+                padding: 8px;
+                margin-bottom: 10px;
+                box-sizing: border-box;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                font-size: 14px;
+            }
+
+            input[type="radio"],
+            input[type="checkbox"] {
+                margin-right: 5px;
+            }
+
+            textarea {
+                resize: vertical;
+            }
+
+            .top-button {
+                text-align: center;
+            }
+
+            .custom-button {
+                background-color: #007bff;
+                color: #fff;
+                padding: 10px 50px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                text-decoration: none;
+                font-size: 14px;
+            }
+        </style>
     </head>
     <body>
-        <table>
-            <tr>
-                <th>名前</th>
-                <th>email</th>
-                <th>更新</th>
-                <th>削除</th>
-            </tr>
-        </table>
-        <!--こちらに基礎課題で言われてる内容を記述しましょう。ここから-->
-        <p id="textTag"></p>
-        <p id="textDemo"></p>
-        <ul id="userList"></ul>
-        <input type="text" id="userIdInput" placeholder="ユーザーIDを入力">
-        <button id="buttonclick">情報を取得</button>
-        <div id="userInfo"></div>
-        <!--usersのリスト作成　users.lengthでDB上の数分繰り返し-->
-        <table id="tableList">
-            <% for (let i=0; i < users.length; i++) { %>
-                <%= users[i].name %>&nbsp; <%= users[i].email %>
-                        <!--変更と削除ボタンの付与&nbsp;は空白入れるためのやつ-->
-                        <a href="/edit/<%= users[i].id %>">更新</a>&nbsp;
-                        <a href="/delete/<%= users[i].id %>">削除</a><br />
-                        <% } %>
-        </table>
-        <!--form.htmlとリンクするためのテキストの実装-->
-        <p><a href="/create">ユーザーの追加</a></p>
-        <!--こちらに基礎課題で言われてる内容を記述しましょう。ここまで-->
-        <script type="text/javascript">
-            // 参考例
+        <!DOCTYPE html>
+        <html lang="ja">
+            <head>
+                <meta charset="UTF-8">
+                <title>アンケートフォーム</title>
+            </head>
+            <body>
+                <form action="/" method="post" onsubmit="return validateForm(this)">
+                    <label>名前: <input class="text" type="text" name="name" ></label><br>
+                    <label>かな: <input class="text" type="text" name="kana" ></label><br>
+                    <label>性別: 男<input type="radio" name="gender" value="男"> 女<input type="radio" name="gender" value="女" ></label><br>
+                    <label>メール: <input class="text" type="text" name="email" ></label><br>
+                    <label>住所: <input class="text" type="text" name="address" ></label><br>
+                    <label>電話番号: <input class="text" type="text" name="phone_number" ></label><br>
+                    <label> 当サイトを知った内容:</label><br>
+                    <label>広告<input type="checkbox" name="known_source[]" value="広告"> サイトを見た<input type="checkbox" name="known_source[]" value="サイトを見た"> 知人から教えてもらった<input type="checkbox" name="known_source[]" value="知人から教えてもらった"> YouTubeの広告を見た<input type="checkbox" name="known_source[]" value="YouTubeの広告を見た">
+                    </label><br>
+                    <label>問い合わせ内容:<br><textarea class="text" name="inquiry_text"></textarea></label><br>
+                    <p class="top-button"><button class="custom-button" type="submit">送 信</button></p>
+                </form>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>名前</th>
+                            <th>かな</th>
+                            <th>性別</th>
+                            <th>メール</th>
+                            <th>住所</th>
+                            <th>電話番号</th>
+                            <th>知った経路</th>
+                            <th>問い合わせ内容</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% questionnaire.forEach(item=> { %> <tr>
+                                <td>
+                                    <%= item.name %>
+                                </td>
+                                <td>
+                                    <%= item.kana %>
+                                </td>
+                                <td>
+                                    <%= item.gender %>
+                                </td>
+                                <td>
+                                    <%= item.email %>
+                                </td>
+                                <td>
+                                    <%= item.address %>
+                                </td>
+                                <td>
+                                    <%= item.phone_number %>
+                                </td>
+                                <td>
+                                    <% if (item.source_text && item.source_text.length> 0) { %> <%= item.source_text.join(', ') %>
+                                <% } %>
+                            </td>
+                            <td><%= item.inquiry_text %></td>
+                            <td>
+                                <a class="custom-button" href="/delete/<%= item.name %>">削除</a>
+                            </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+                <script>
 
-
-            let textTag = document.getElementById('textTag');
-            let NUMBER = `<%= number %>`;
-            textTag.innerHTML = NUMBER;
-
-            let textDemo = document.getElementById("textDemo");
-            let TEXT = `<%= text %>`;
-            textDemo.innerHTML = TEXT;
-
-            let userList = document.getElementById('userList');
-            let USERLIST = JSON.parse(`<%= JSON.stringify(users) %>`.replace(/&#34;/g, '"'));
-            //console.log(USERLIST);
-            let userListHTML = '';
-            USERLIST.forEach(user => {
-                userListHTML += '<li>name: ' + user.name + '<br>email: ' + user.email + '</li>';
-            });
-            userList.innerHTML = userListHTML;
-
-            //usersをsqlのDBから取ってきてUSERSという変数に格納している。
-            let USERS = JSON.parse('<%= JSON.stringify(users) %>'.replace(/&#34;/g, '"'));
-            //USERS[0]のidをコンソールに出力。
-            console.log(USERS[0].id);
-
-            //buttonを押したとき
-            document.getElementById("buttonclick").onclick = function () {
-                //userIdInputに入力された文字を数値型に変換している。
-                const userId = parseInt(document.getElementById("userIdInput").value, 10);
-                //userIdが文字型か数値型か判定
-                console.log(typeof userId);
-                console.log(userId);
-
-                //入力された文字とDBの中のidで同一のものがあるかの判定
-                const user = USERS.find(function (user) {
-                    return user.id === userId;
-                });
-                console.log(user);
-
-                //上で判定して同一のものがあればifの結果文　なければユーザーが見つかりませんと表示させる。
-                if (user) {
-                    document.getElementById("userInfo").innerHTML = user.name + ' ' + user.email;
-                } else {
-                    document.getElementById("userInfo").innerHTML = 'ユーザーが見つかりません。';
-                }
-            };
-
-
-            // ここからはapp.jsで作成した値をここでブラウザに出力するように機能を実装していきましょう。上記の参考例を元にやってみましょう。
-            // 基礎課題01:画面に表示する機能作りましょう。
-            /*
-            基礎課題02,03をやる前に
-            配列とオブジェクトリストをapp.jsから取得するときに以下のやり方が必要になります。
-            変数名は自由に決めてください。プロパティ名についてはapp.jsでオブジェクト内に格納したプロパティ名を使用してください。
-            以下使用する際は<%#の「#」部分を「=」に変更するよう気をつけてください。%>
-            let 変数名 = JSON.parse('<%# JSON.stringify(プロパティ名) %>'.replace(/&#34;/g, '"'));
-            */
-
-            // 基礎課題02:HTML内にulタグを作成し、liタグでapp.jsで作成した情報を画面に表示して下さい。
-
-            // 基礎課題03:作成したオブジェクトリストをブラウザに出力して下さい。その場合以下の様に出力して下さい。
-            // 例）
-            // name: s.chiba
-            // email: s.chiba@gmail.com
-        </script>
-    </body>
-</html>
+                </script>
+            </body>
+        </html>
