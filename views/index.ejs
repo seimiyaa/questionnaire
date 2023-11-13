@@ -72,12 +72,12 @@
             </head>
             <body>
                 <form action="/" method="post" onsubmit="return validateForm(this)">
-                    <label>名前: <input class="text" type="text" name="name" ></label><br>
-                    <label>かな: <input class="text" type="text" name="kana" ></label><br>
-                    <label>性別: 男<input type="radio" name="gender" value="男"> 女<input type="radio" name="gender" value="女" ></label><br>
-                    <label>メール: <input class="text" type="text" name="email" ></label><br>
-                    <label>住所: <input class="text" type="text" name="address" ></label><br>
-                    <label>電話番号: <input class="text" type="text" name="phone_number" ></label><br>
+                    <label>名前: <input class="text" type="text" name="name" required></label><br>
+                    <label>かな: <input class="text" type="text" name="kana" required></label><br>
+                    <label>性別: 男<input type="radio" name="gender" value="男"> 女<input type="radio" name="gender" value="女" required></label><br>
+                    <label>メール: <input class="text" type="text" name="email" required></label><br>
+                    <label>住所: <input class="text" type="text" name="address" required></label><br>
+                    <label>電話番号: <input class="text" type="text" name="phone_number" required></label><br>
                     <label> 当サイトを知った内容:</label><br>
                     <label>広告<input type="checkbox" name="known_source[]" value="広告"> サイトを見た<input type="checkbox" name="known_source[]" value="サイトを見た"> 知人から教えてもらった<input type="checkbox" name="known_source[]" value="知人から教えてもらった"> YouTubeの広告を見た<input type="checkbox" name="known_source[]" value="YouTubeの広告を見た">
                     </label><br>
