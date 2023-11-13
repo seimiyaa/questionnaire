@@ -72,16 +72,16 @@
             </head>
             <body>
                 <form action="/" method="post" onsubmit="return validateForm(this)">
-                    <label>名前: <input class="text" type="text" name="name" required></label><br>
-                    <label>かな: <input class="text" type="text" name="kana" required></label><br>
-                    <label>性別: 男<input type="radio" name="gender" value="男"> 女<input type="radio" name="gender" value="女" required></label><br>
-                    <label>メール: <input class="text" type="text" name="email" required></label><br>
-                    <label>住所: <input class="text" type="text" name="address" required></label><br>
-                    <label>電話番号: <input class="text" type="text" name="phone_number" required></label><br>
+                    <label>名前: <input class="text" type="text" name="name" required><span class="error-message"></span></label><br>
+                    <label>かな: <input class="text" type="text" name="kana" required><span class="error-message"></span></label><br>
+                    <label>性別: 男<input type="radio" name="gender" value="男"> 女<input type="radio" name="gender" value="女" required><span class="error-message"></span></label><br>
+                    <label>メール: <input class="text" type="text" name="email" required><span class="error-message"></span></label><br>
+                    <label>住所: <input class="text" type="text" name="address" required><span class="error-message"></span></label><br>
+                    <label>電話番号: <input class="text" type="text" name="phone_number" required><span class="error-message"></span></label><br>
                     <label> 当サイトを知った内容:</label><br>
                     <label>広告<input type="checkbox" name="known_source[]" value="広告"> サイトを見た<input type="checkbox" name="known_source[]" value="サイトを見た"> 知人から教えてもらった<input type="checkbox" name="known_source[]" value="知人から教えてもらった"> YouTubeの広告を見た<input type="checkbox" name="known_source[]" value="YouTubeの広告を見た">
-                    </label><br>
-                    <label>問い合わせ内容:<br><textarea class="text" name="inquiry_text"></textarea></label><br>
+                        <span class="error-message"></span></label><br>
+                    <label>問い合わせ内容:<br><textarea class="text" name="inquiry_text"></textarea><span class="error-message"></span></label><br>
                     <p class="top-button"><button class="custom-button" type="submit">送 信</button></p>
                 </form>
                 <table>
@@ -131,7 +131,94 @@
                     </tbody>
                 </table>
                 <script>
-
+                    // フォーム要素を取得
+                    const form = document.querySelector('form');
+                
+                    // 各フィールドの要素を取得
+                    const nameField = form.querySelector('[name="name"]');
+                    const kanaField = form.querySelector('[name="kana"]');
+                    const genderField = form.querySelector('[name="gender"]');
+                    const emailField = form.querySelector('[name="email"]');
+                    const addressField = form.querySelector('[name="address"]');
+                    const phoneNumberField = form.querySelector('[name="phone_number"]');
+                
+                    // 各フィールドにフォーカスが外れたときにバリデーションを行うリスナーを追加
+                    nameField.addEventListener('change', validateNameOnChange);
+                    kanaField.addEventListener('change', validateKanaOnChange);
+                    emailField.addEventListener('change', validateEmailOnChange);
+                    addressField.addEventListener('change', validateAddressOnChange);
+                    phoneNumberField.addEventListener('change', validatePhoneNumberOnChange);
+                
+                    // 性別フィールドに関しては送信ボタンがクリックされたときにバリデーションを行う
+                    const submitButton = form.querySelector('[type="submit"]');
+                    submitButton.addEventListener('click', validateGenderOnSubmit);
+                
+                    // 各フィールドのフォーカスが外れたときに呼び出される関数
+                    function validateNameOnChange() {
+                        const error = !validateName(nameField.value) ? '名前は漢字、ひらがな、英字のみです' : '';
+                        displayFieldError(nameField, error);
+                    }
+                
+                    function validateKanaOnChange() {
+                        const error = !validateKana(kanaField.value) ? 'かなはひらがなのみです' : '';
+                        displayFieldError(kanaField, error);
+                    }
+                
+                    function validateEmailOnChange() {
+                        const error = !validateEmail(emailField.value) ? '正しいメールアドレス形式で入力してください' : '';
+                        displayFieldError(emailField, error);
+                    }
+                
+                    function validateAddressOnChange() {
+                        const error = !validateAddress(addressField.value) ? '住所は漢字、ひらがな、数字のみです' : '';
+                        displayFieldError(addressField, error);
+                    }
+                
+                    function validatePhoneNumberOnChange() {
+                        const error = !validatePhoneNumber(phoneNumberField.value) ? '電話番号はハイフン、半角数字のみです' : '';
+                        displayFieldError(phoneNumberField, error);
+                    }
+                
+                    // 性別フィールドに関しては送信ボタンがクリックされたときに呼び出される関数
+                    function validateGenderOnSubmit() {
+                        const error = !genderField.value ? '性別が選択されていません' : '';
+                        displayFieldError(genderField, error);
+                    }
+                
+                    // エラーメッセージを表示する関数
+                    function displayFieldError(field, error) {
+                        const errorElement = field.parentElement.querySelector('.error-message');
+                        if (errorElement) {
+                            errorElement.textContent = error;
+                        }
+                    }
+                
+                    // 各フィールドのバリデーション関数
+                    function validateName(value) {
+                        const nameRegex = /^[ぁ-んァ-ン一-龯a-zA-Z]+$/;
+                        return nameRegex.test(value);
+                    }
+                
+                    function validateKana(value) {
+                        const kanaRegex = /^[ぁ-ん]+$/;
+                        return kanaRegex.test(value);
+                    }
+                
+                    function validateEmail(value) {
+                        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        return emailRegex.test(value);
+                    }
+                
+                    function validateAddress(value) {
+                        const addressRegex = /^[ぁ-んァ-ン一-龯0-9]+$/;
+                        return addressRegex.test(value);
+                    }
+                
+                    function validatePhoneNumber(value) {
+                        const phoneNumberRegex = /^\d+(-\d+)*$/;
+                        return phoneNumberRegex.test(value);
+                    }
                 </script>
+                
             </body>
         </html>
