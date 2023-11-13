@@ -1,0 +1,133 @@
+<head>
+    <meta charset="UTF-8">
+    <title>入力フォーム</title>
+    <style type="text/css">
+        input[type="text"] {
+            width: 400px;
+            height: 40px;
+            background: #f5f5dc;
+            border: 1px solid #bebebe;
+            border-radius: 5px;
+            font-size: 1em;
+            text-indent: 0.7em;
+        }
+
+        input[type="text"]:focus {
+            background: #f0fff0;
+            border: 1px solid #4881d9;
+        }
+
+        #labelName {
+            font-size: 20px;
+        }
+
+        #labelEmail {
+            font-size: 20px;
+        }
+
+        .form {
+            text-align: center;
+        }
+
+        #button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            width: 250px;
+            margin: 0 auto;
+            padding: .5em 3em .5em 2em;
+            border: 1px solid #87c040;
+            border-radius: 10px;
+            background-color: #fff;
+            color: #87c040;
+            font-size: 1em;
+        }
+
+        #button::after {
+            position: absolute;
+            right: 2em;
+            transform: translateY(-50%);
+            transform-origin: left;
+            width: 2em;
+            height: .5em;
+            background-color: #87c040;
+            clip-path: polygon(0 100%, 100% 100%, 70% 40%, 70% 90%, 0% 90%);
+            content: '';
+            transition: transform .3s;
+        }
+
+        #button:hover::after {
+            transform: translateY(-50%) scaleX(1.4);
+        }
+
+        .box-010 {
+            position: relative;
+            max-width: 400px;
+            margin: 1.5em auto;
+            padding: 2.5em 1.5em 1.5em;
+            box-shadow: 0 2px 3px rgb(0 0 0 / 20%);
+            background-color: #f0fff0;
+            color: #333333;
+        }
+
+        .box-010 span {
+            position: absolute;
+            top: -15px;
+            transform: translateX(-.3em) rotate(-5deg);
+            padding: 1.2em 4em;
+            border-right: 2px dotted rgb(0 0 0 / 10%);
+            border-left: 2px dotted rgb(0 0 0 / 10%);
+            box-shadow: 0 0 5px rgb(0 0 0 / 20%);
+            background-color: rgb(255 255 255 / 40%);
+            font-weight: 600;
+        }
+
+        .box-010 h1 {
+            margin: 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="box-010">
+        <span></span>
+        <h1>入力フォーム</h1>
+    </div>
+    <!--ここに追加-->
+    <div class="form">
+        <form action="/" method="POST" onsubmit="return validateForm()">
+            <lable id="labelName">name: <input type="text" id="name" name="name"></lable><br>
+            <br>
+            <lable id="labelEmail">email: <input type="text" id="email" name="email"></lable><br>
+            <br>
+            <button type="submit" id="button">送信</button>
+        </form>
+    </div>
+    <script>
+
+        function validateForm() {
+            var nameInput = document.getElementById("name");
+            var emailInput = document.getElementById("email");
+            var nameValue = nameInput.value;
+            var emailValue = emailInput.value;
+
+            // 名前のバリデーション
+            var namePattern = /^[A-Za-z.]+$/;
+            if (!namePattern.test(nameValue)) {
+                alert("名前は半角英字と「.」のみが許可されています。");
+                return false; // フォーム送信を中止
+            }
+
+            // メールアドレスのバリデーション
+            var emailPattern = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+            if (!emailPattern.test(emailValue)) {
+                alert("有効なメールアドレスを入力してください。");
+                return false; // フォーム送信を中止
+            }
+
+            return true; // バリデーションが成功したらフォーム送信を許可
+        }
+    </script>
+</body>
+</html>
