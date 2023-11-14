@@ -17,13 +17,27 @@ const con = mysql.createConnection({
   database: "express_db",
 });
 
+const multer = require("multer");
+const upload = multer();
+
+app.use(upload.array());
 // ルートパスにアクセスされたときの処理
 app.get("/", (req, res) => {
+  console.log("req.body:", req.body);
   // データベースからアンケートデータを取得
   const sql = "SELECT * FROM questionnaire";
 
-  // フォームデータの処理
   app.post("/", (req, res) => {
+    // チェックボックスの情報を取得
+    const knownSource = req.body["known_source"];
+    console.log("knownSource:", knownSource);
+
+    // チェックボックスの情報をカンマで結合
+    const knownSourceString = Array.isArray(knownSource)
+      ? knownSource.join(", ")
+      : knownSource;
+
+    // フォームデータの処理
     const sqlInsert = "INSERT INTO questionnaire SET ?";
     const validColumns = [
       "name",
@@ -32,6 +46,7 @@ app.get("/", (req, res) => {
       "email",
       "address",
       "phone_number",
+      "known_source[]",
       "inquiry_text",
     ];
 
@@ -42,6 +57,9 @@ app.get("/", (req, res) => {
         obj[key] = req.body[key];
         return obj;
       }, {});
+
+    // 知った経路を追加
+    validData["known_source"] = knownSourceString;
 
     // データベースに挿入
     con.query(sqlInsert, validData, function (err, result, fields) {
